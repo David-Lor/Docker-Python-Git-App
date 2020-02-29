@@ -71,6 +71,13 @@ The steps that run when the container starts are:
     4. create a status file to mark the container already ran this setup process
 - Start the cloned app
 
+## Make utils
+
+- `make test` - run tests (requires root/sudo and pytest)
+- `USE_SUDO=0 make test` - run tests without sudo (if current user is root or part of docker group)
+- `make test-classic` - run tests sequentially (make test runs in parallel using pytest-xdist)
+- `test-install-requirements` - pip install test requirements
+
 ## Changelog
 
 - 0.0.1 - Initial release
