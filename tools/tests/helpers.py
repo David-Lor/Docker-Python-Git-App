@@ -53,6 +53,7 @@ class BaseTest:
         args.extend(["-e", "GIT_REPOSITORY={}".format(repository)])
 
         cmd = ["docker", "run", "--rm", *args, image + ":" + image_tag]
+
         if USE_SUDO:
             cmd = ["sudo", *cmd]
 
@@ -60,7 +61,7 @@ class BaseTest:
             cmd.extend(final_args)
 
         try:
-            return subprocess.check_output(cmd).decode()
+            return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except subprocess.CalledProcessError as error:
             return error.output.decode()
 
@@ -92,7 +93,7 @@ class BaseTest:
             if USE_SUDO:
                 cmd = ["sudo", *cmd]
 
-            output = subprocess.check_output(cmd).decode()
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
             cls.created_images.add(image)
 
             return image, output

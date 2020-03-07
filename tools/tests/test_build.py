@@ -3,6 +3,9 @@ from .const import *
 
 
 class TestBuild(BaseTest):
+    """Test building the image
+    """
+
     def test_build_default(self):
         """Test building the image with default parameters, then running the container, thus running the app
         """
@@ -29,3 +32,12 @@ class TestBuild(BaseTest):
 
         output = self.run_container(image=image, args=["--entrypoint", "which"], final_args=["apk"])
         assert "/sbin/apk" in output
+
+    def test_build_python_27(self):
+        """Test building the image using the '2.7-alpine' base tag
+        """
+        image, output = self.build_image(base_tag="2.7-alpine")
+        assert image in output
+
+        output = self.run_container(image=image, final_args=["python", "-V"])
+        assert output.startswith("Python 2.7")

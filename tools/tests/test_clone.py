@@ -19,7 +19,8 @@ class TestClone(BaseTest):
         assert GIT_CLONE_FAILED_ERROR in output
 
     def test_clone_existing_branch_fail_pip_install(self):
-        """Test cloning from an existing repository, an existing branch (the requirements-fail, that will fail pip install)
+        """Test cloning from an existing repository, an existing branch
+        (the requirements-fail branch, that will fail pip install)
         """
         # TODO Create another branch on Python-HelloWorld repository that won't fail but output something different
         output = self.run_container(branch=REQUIREMENTS_FAIL_BRANCH)

@@ -20,17 +20,21 @@ ProjectRoot (cloned through Git)
 │-  ...and all the other project files/directories
 ```
 
-## Getting started
-
-```bash
-docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" davidlor/python-autoclonable-app
-```
-
 Some examples of projects compliant with this structure are:
 
 - [Python-HelloWorld](https://github.com/David-Lor/Python-HelloWorld) (used as Git repository for testing this image)
 - [MQTT2ETCD](https://github.com/David-Lor/MQTT2ETCD)
 - [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
+
+## Getting started
+
+This image is WIP and not published yet on Docker Hub.
+
+```bash
+git clone https://github.com/David-Lor/Docker-Python-Autoclonable-App.git DockerPythonClonable
+docker build DockerPythonClonable -t docker-python-git-app
+docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" docker-python-git-app
+```
 
 ## ENV Variables & ARGs
 
@@ -74,9 +78,11 @@ The steps that run when the container starts are:
 ## Make utils
 
 - `make test` - run tests (requires root/sudo and pytest)
-- `USE_SUDO=0 make test` - run tests without sudo (if current user is root or part of docker group)
+- `make test USE_SUDO=0` - run tests without sudo (if current user is root or part of docker group)
 - `make test-classic` - run tests sequentially (make test runs in parallel using pytest-xdist)
 - `test-install-requirements` - pip install test requirements
+- `sudo build BASE_TAG=slim` - build the image with the `python:slim` base image, and tag as `docker-python-git-app:slim`
+- `sudo build BASE_TAG=alpine IMAGE_TAG=my-python:latest` - build the image with the `python:alpine` base image, and tag as `my-python:latest`
 
 ## Changelog
 
