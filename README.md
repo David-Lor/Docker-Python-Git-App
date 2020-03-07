@@ -38,7 +38,7 @@ Some examples of projects compliant with this structure are:
 - `GIT_BRANCH`: set the Branch to clone from the Git repository (optional, default: use default branch)
 - `APP_NAME`: name of your app. This name is given to the directory where project is cloned on(optional, default: _PythonApp_)
 - (ARG) `USERNAME`: name of the user that is created on Dockerbuild to run the app with (optional, default: _user_)
-- (ARG) `IMAGE_TAG`: tag of the [Python base image](https://hub.docker.com/_/python/) to be used for the build (optional, default: _latest_)
+- (ARG) `BASE_TAG`: tag of the [Python base image](https://hub.docker.com/_/python/) to be used for the build (optional, default: _latest_)
 
 Only required variable is (ENV) `GIT_REPOSITORY`.
 The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg).
@@ -51,12 +51,12 @@ for unsupported architedtures), you must do on host machine:
 - Clone this repository
 - Build a new Docker image using the repository directory - you can optionally set these ARGs:
   - a custom username using the `USERNAME` ARG
-  - a custom [Python base image](https://hub.docker.com/_/python/) tag using the `IMAGE_TAG` ARG (example: `alpine` or `slim`)
+  - a custom [Python base image](https://hub.docker.com/_/python/) tag using the `BASE_TAG` ARG (example: `alpine` or `slim`)
 - Create a new container, setting up the desired ENV variables
 
 ```bash
 git clone https://github.com/David-Lor/Docker-Python-Autoclonable-App.git DockerPythonClonable
-docker build DockerPythonClonable --build-arg USERNAME=user --build-arg IMAGE_TAG=slim -t yourname/yourtag:yourversion
+docker build DockerPythonClonable --build-arg USERNAME=user --build-arg BASE_TAG=slim -t yourname/yourtag:yourversion
 docker run [...] yourname/yourtag:yourversion
 ```
 

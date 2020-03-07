@@ -4,10 +4,10 @@ USERNAME := "user"
 BASE_TAG := "latest"
 IMAGE_TAG := "$(shell cat tools/built_image_name.txt):${BASE_TAG}"
 
-build: ## build the image
+build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
 	docker build . \
 		--build-arg USERNAME=${USERNAME} \
-		--build-arg IMAGE_TAG=${BASE_TAG} \
+		--build-arg BASE_TAG=${BASE_TAG} \
 		-t ${IMAGE_TAG}
 
 test: ## run tests in parallel
@@ -31,5 +31,5 @@ test-nobuild-classic: ## run non-build tests sequentially (without parallelizati
 test-install-requirements: ## pip install requirements for tests
 	pip install -r tools/tests/requirements.txt
 
-help: ## Show this help.
+help: ## show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'

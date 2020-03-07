@@ -21,10 +21,10 @@ jobs:
         run: make test-build
 
   build_test_push:
-    name: Build, Test & Push (with python:${{ matrix.base_image }})
+    name: Build, Test & Push (with python:${{ matrix.base_tag }})
     strategy:
       matrix:
-        base_image:
+        base_tag:
           - latest
           - slim
           - alpine
@@ -47,7 +47,7 @@ jobs:
       - name: Build
         run: make build
         env:
-          BASE_TAG: ${{ matrix.base_image }}
+          BASE_TAG: ${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
       #- name: Build

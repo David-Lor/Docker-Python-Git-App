@@ -69,7 +69,7 @@ class BaseTest:
         """
         :param image: image name (if not defined, use a random uuid4 as name)
         :param args: args for Docker Build command
-        :param base_tag: set IMAGE_TAG build Arg
+        :param base_tag: set BASE_TAG build Arg
         :param user: set USERNAME build Arg
         :return: [image name, command output]
         """
@@ -80,7 +80,7 @@ class BaseTest:
             image = str(uuid4())
 
         if base_tag:
-            args.extend(["--build-arg", "IMAGE_TAG={}".format(base_tag)])
+            args.extend(["--build-arg", "BASE_TAG={}".format(base_tag)])
 
         if user:
             args.extend(["--build-arg", "USERNAME={}".format(user)])
