@@ -84,7 +84,8 @@ The steps that run when the container starts are:
 
 ## TODO
 
-- Allow setting GIT repository through CMD instead of ENV
-- Load SSH key from directoryfor cloning SSH git repositories
+- Allow setting GIT repository through CMD
+- Load SSH private key for cloning SSH git repositories (from path or secret)
 - Create Github Actions to build, test and push multiple tags to DockerHub (if possible all the tags available on the Python base image)
+- Create multi-arch images
 - Run as root with an env variable - or another image tag

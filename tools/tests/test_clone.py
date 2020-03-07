@@ -5,10 +5,6 @@ from .const import *
 class TestClone(BaseTest):
     """Test the repository cloning, thus running the app
     """
-    @classmethod
-    def setup_class(cls):
-        super().setup_class()
-        cls.build_image(image=IMAGE_NAME)
 
     def test_clone_existing_repository(self):
         """Test cloning from an existing repository
