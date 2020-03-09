@@ -32,8 +32,8 @@ This image is WIP and not published yet on Docker Hub.
 
 ```bash
 git clone https://github.com/David-Lor/Docker-Python-Autoclonable-App.git DockerPythonClonable
-docker build DockerPythonClonable -t docker-python-git-app
-docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" docker-python-git-app
+docker build DockerPythonClonable -t python-git-app
+docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" python-git-app
 ```
 
 ## ENV Variables & ARGs
@@ -81,7 +81,7 @@ The steps that run when the container starts are:
 - `make test USE_SUDO=0` - run tests without sudo (if current user is root or part of docker group)
 - `make test-classic` - run tests sequentially (make test runs in parallel using pytest-xdist)
 - `test-install-requirements` - pip install test requirements
-- `sudo build BASE_TAG=slim` - build the image with the `python:slim` base image, and tag as `docker-python-git-app:slim`
+- `sudo build BASE_TAG=slim` - build the image with the `python:slim` base image, and tag as `python-git-app:slim`
 - `sudo build BASE_TAG=alpine IMAGE_TAG=my-python:latest` - build the image with the `python:alpine` base image, and tag as `my-python:latest`
 
 ## Changelog

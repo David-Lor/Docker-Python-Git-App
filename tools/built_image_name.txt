@@ -1,1 +1,1 @@
-docker-python-git-app
+python-git-app
