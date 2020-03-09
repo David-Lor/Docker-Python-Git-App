@@ -1,0 +1,59 @@
+name: Build, Test & Push
+on:
+  - push
+
+jobs:
+  test_build:
+    name: Test image building
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      - name: Install test requirements
+        run: make test-install-requirements
+      - name: Test
+        run: make test-build
+
+  build_test_push:
+    name: Build, Test & Push (with python:${{ matrix.base_tag }})
+    strategy:
+      matrix:
+        base_tag:
+          - latest
+          - slim
+          - alpine
+          - 3.5-slim-stretch
+          - 3.6-slim-stretch
+          - 3.7-slim-stretch
+          - 2-slim-stretch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+      - name: Setup Python
+        uses: actions/setup-python@master
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      - name: Install test requirements
+        run: make test-install-requirements
+      - name: Build
+        run: make build
+        env:
+          BASE_TAG: ${{ matrix.base_tag }}
+      - name: Test
+        run: make test-nobuild
+      #- name: Build
+      #  run: make build
+      #- name: Publish to DockerHub
+      #  run: make push
+      #  env:
+      #    DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      #    DOCKER_PASS: ${{ secrets.DOCKER_PASS }}

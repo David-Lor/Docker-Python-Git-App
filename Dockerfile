@@ -1,5 +1,5 @@
-ARG IMAGE_TAG=latest
-FROM python:${IMAGE_TAG}
+ARG BASE_TAG=latest
+FROM python:${BASE_TAG}
 
 # ENV variables
 ENV GIT_REPOSITORY="" \
