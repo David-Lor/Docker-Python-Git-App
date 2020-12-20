@@ -43,6 +43,8 @@ jobs:
         run: make build BASE_TAG=${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
+        env:
+          IMAGE_TAG: ${{ matrix.base_tag }}
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
