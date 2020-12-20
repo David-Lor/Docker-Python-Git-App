@@ -40,9 +40,7 @@ jobs:
       - name: Install test requirements
         run: make test-install-requirements
       - name: Build
-        run: make build
-        env:
-          BASE_TAG: ${{ matrix.base_tag }}
+        run: make build BASE_TAG=${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
       - name: Login to DockerHub
@@ -51,6 +49,4 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
       - name: Publish to DockerHub
-        run: make push
-        env:
-          BASE_TAG: ${{ matrix.base_tag }}
+        run: make push BASE_TAG=${{ matrix.base_tag }}
