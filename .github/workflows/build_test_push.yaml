@@ -45,9 +45,12 @@ jobs:
           BASE_TAG: ${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
       - name: Publish to DockerHub
         run: make push
         env:
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
           BASE_TAG: ${{ matrix.base_tag }}
