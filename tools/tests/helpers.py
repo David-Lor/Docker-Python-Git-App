@@ -33,7 +33,7 @@ class BaseTest:
     @staticmethod
     def run_container(
             repository=DEFAULT_REPOSITORY, branch=None, args=None,
-            image=IMAGE_NAME, image_tag=DEFAULT_IMAGE_TAG, final_args=None
+            image=IMAGE_NAME, image_tag=IMAGE_TAG, final_args=None
     ):
         """
         :param repository: Git repository URL
@@ -61,6 +61,7 @@ class BaseTest:
             cmd.extend(final_args)
 
         try:
+            print(f"Running command \"{' '.join(cmd)}\"...")
             return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except subprocess.CalledProcessError as error:
             return error.output.decode()
