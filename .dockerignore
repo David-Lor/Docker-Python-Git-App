@@ -1,0 +1,8 @@
+LICENSE
+*.md
+.git*
+tests/
+tools/
+examples/
+.vscode/
+.idea/

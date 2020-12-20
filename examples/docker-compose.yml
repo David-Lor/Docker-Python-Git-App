@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  python-helloworld:
+    container_name: python_helloworld-example
+    image: davidlor/python-autoclonable-app:latest
+    environment:
+      - GIT_REPOSITORY=https://github.com/David-Lor/Python-HelloWorld
+      - APP_NAME=HelloWorldApp
+      - GIT_BRANCH=master
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
