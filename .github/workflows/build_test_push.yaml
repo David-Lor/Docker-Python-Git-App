@@ -26,7 +26,6 @@ jobs:
           - 3.5-slim-stretch
           - 3.6-slim-stretch
           - 3.7-slim-stretch
-          - 2-slim-stretch
 
     steps:
       - uses: actions/checkout@master
