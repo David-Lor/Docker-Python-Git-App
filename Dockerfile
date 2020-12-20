@@ -21,4 +21,4 @@ WORKDIR /home/${USERNAME}
 COPY scripts/* ./scripts/
 
 # Run entrypoint as default command
-CMD ["bash", "scripts/entrypoint.sh"]
+CMD ["sh", "scripts/entrypoint.sh"]
