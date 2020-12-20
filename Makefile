@@ -2,8 +2,8 @@
 
 USERNAME := "user"
 BASE_TAG := "latest"
-IMAGE_TAG := "$(shell cat tools/built_image_name.txt):${BASE_TAG}"
-PUSH_IMAGE_TAG := "davidlor/python-git-app:${BASE_TAG}"
+IMAGE_TAG := "$(shell cat tools/built_image_name.txt):$BASE_TAG"
+PUSH_IMAGE_TAG := "davidlor/python-git-app:$BASE_TAG"
 
 build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
 	docker build . \
