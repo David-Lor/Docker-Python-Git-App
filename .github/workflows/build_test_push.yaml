@@ -1,38 +1,35 @@
+# Build, test (except "build" tests), and push the image with all the tags defined.
+# This is intended to run for each push on "master" branch, and scheduled to keep the images updated.
+
 name: Build, Test & Push
 on:
   - push
+  # push:
+  #   branches:
+  #     - master
+  # schedule:
+  #   - cron: '0 0 * * *'  # every day at 0h
 
 jobs:
-  test_build:
-    name: Test image building
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 1
-      - name: Setup Python
-        uses: actions/setup-python@master
-        with:
-          python-version: "3.8"
-          architecture: "x64"
-      - name: Install test requirements
-        run: make test-install-requirements
-      - name: Test
-        run: make test-build
-
   build_test_push:
     name: Build, Test & Push (with python:${{ matrix.base_tag }})
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        base_tag:
+        base_tag:  # Same Docker tags than those used on the official Python image: https://hub.docker.com/_/python/
           - latest
           - slim
           - alpine
+          - buster
+          - 3.9-buster
+          - 3.7.9-buster
+          - 3.7.9-alpine
+          - 3.8-buster
           - 3.5-slim-stretch
           - 3.6-slim-stretch
           - 3.7-slim-stretch
           - 2-slim-stretch
-    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@master
         with:
@@ -50,8 +47,6 @@ jobs:
           BASE_TAG: ${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
-      #- name: Build
-      #  run: make build
       #- name: Publish to DockerHub
       #  run: make push
       #  env:
