@@ -33,13 +33,13 @@ class BaseTest:
     @staticmethod
     def run_container(
             repository=DEFAULT_REPOSITORY, branch=None, args=None,
-            image=IMAGE_NAME, image_tag=DEFAULT_IMAGE_TAG, final_args=None
+            image_name=IMAGE_NAME, image_tag=IMAGE_TAG, final_args=None
     ):
         """
         :param repository: Git repository URL
         :param branch: Git branch
         :param args: args for Docker Run command to use in the middle (before defining the image)
-        :param image: image to use
+        :param image_name: image to use
         :param image_tag: image tag to use (if not specified, load from IMAGE_TAG environment variable)
         :param final_args: args for Docker Run command to use at the end (after defining the image)
         :return: command output
@@ -52,7 +52,7 @@ class BaseTest:
 
         args.extend(["-e", "GIT_REPOSITORY={}".format(repository)])
 
-        cmd = ["docker", "run", "--rm", *args, image + ":" + image_tag]
+        cmd = ["docker", "run", "--rm", *args, image_name + ":" + image_tag]
 
         if USE_SUDO:
             cmd = ["sudo", *cmd]
@@ -61,6 +61,7 @@ class BaseTest:
             cmd.extend(final_args)
 
         try:
+            print(f"Running command \"{' '.join(cmd)}\"...")
             return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
         except subprocess.CalledProcessError as error:
             return error.output.decode()

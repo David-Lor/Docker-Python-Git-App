@@ -1,13 +1,18 @@
 name: Build, Test & Push
 on:
-  - push
+  push: {}
+  schedule:
+    - cron: '0 0 * * *'  # every day at 0h
 
 jobs:
-  test_build:
-    name: Test image building
+  testBuild:
+    # Run "build" tests
+    name: Test (build)
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@master
         with:
           fetch-depth: 1
       - name: Setup Python
@@ -20,21 +25,31 @@ jobs:
       - name: Test
         run: make test-build
 
-  build_test_push:
-    name: Build, Test & Push (with python:${{ matrix.base_tag }})
+  build_testNoBuild_push:
+    # Build, run "no-build" tests, and push to DockerHub if current branch is "master"
+    name: "[python:${{ matrix.base_tag }}] Build, Test (no-build) & Push"
+    runs-on: ubuntu-latest
+    needs: testBuild
     strategy:
+      fail-fast: false
       matrix:
-        base_tag:
+        base_tag:  # Same Docker tags than those used on the official Python image: https://hub.docker.com/_/python/
           - latest
           - slim
           - alpine
+          - buster
+          - 3.9-buster
+          - 3.7.9-buster
+          - 3.7.9-alpine
+          - 3.8-buster
           - 3.5-slim-stretch
           - 3.6-slim-stretch
           - 3.7-slim-stretch
-          - 2-slim-stretch
-    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@master
+      # Preparation
+      - name: Checkout
+        uses: actions/checkout@master
         with:
           fetch-depth: 1
       - name: Setup Python
@@ -44,16 +59,24 @@ jobs:
           architecture: "x64"
       - name: Install test requirements
         run: make test-install-requirements
+
+      # Build image
       - name: Build
-        run: make build
-        env:
-          BASE_TAG: ${{ matrix.base_tag }}
+        run: make build BASE_TAG=${{ matrix.base_tag }}
+
+      # Test no-build, with built image
       - name: Test
         run: make test-nobuild
-      #- name: Build
-      #  run: make build
-      #- name: Publish to DockerHub
-      #  run: make push
-      #  env:
-      #    DOCKER_USER: ${{ secrets.DOCKER_USER }}
-      #    DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+        env:
+          IMAGE_TAG: ${{ matrix.base_tag }}
+
+      # Push build image to DockerHub (only if branch is "master")
+      - name: Login to DockerHub
+        if: github.ref == 'refs/heads/master'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Publish to DockerHub
+        if: github.ref == 'refs/heads/master'
+        run: make push BASE_TAG=${{ matrix.base_tag }}
