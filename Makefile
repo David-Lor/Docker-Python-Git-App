@@ -2,14 +2,14 @@
 
 USERNAME := "user"
 BASE_TAG := "latest"
-IMAGE_TAG := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)"
-PUSH_IMAGE_TAG := "davidlor/python-git-app:$(BASE_TAG)"
+IMAGE_NAME := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)"
+PUSH_IMAGE_NAME := "davidlor/python-git-app:$(BASE_TAG)"
 
 build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
 	docker build . \
 		--build-arg USERNAME=${USERNAME} \
 		--build-arg BASE_TAG=${BASE_TAG} \
-		-t ${IMAGE_TAG}
+		-t ${IMAGE_NAME}
 
 test: ## run tests in parallel
 	pytest -sv -n auto tools/tests
@@ -33,8 +33,8 @@ test-install-requirements: ## pip install requirements for tests
 	pip install -r tools/tests/requirements.txt
 
 push: ## push built image to dockerhub
-	docker tag ${IMAGE_TAG} ${PUSH_IMAGE_TAG}
-	docker push ${PUSH_IMAGE_TAG}
+	docker tag ${IMAGE_NAME} ${PUSH_IMAGE_NAME}
+	docker push ${PUSH_IMAGE_NAME}
 
 help: ## show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
