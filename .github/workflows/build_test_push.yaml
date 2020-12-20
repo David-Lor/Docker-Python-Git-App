@@ -1,14 +1,12 @@
 # Build, test (except "build" tests), and push the image with all the tags defined.
-# This is intended to run for each push on "master" branch, and scheduled to keep the images updated.
+# This is intended to run for each push, except the Push to DockerHub last step, which shall run
+# only in "master" branch, and scheduled to keep the images updated.
 
 name: Build, Test & Push
 on:
-  - push
-  # push:
-  #   branches:
-  #     - master
-  # schedule:
-  #   - cron: '0 0 * * *'  # every day at 0h
+  push: {}
+  schedule:
+    - cron: '0 0 * * *'  # every day at 0h
 
 jobs:
   build_test_push:
@@ -47,8 +45,8 @@ jobs:
           BASE_TAG: ${{ matrix.base_tag }}
       - name: Test
         run: make test-nobuild
-      #- name: Publish to DockerHub
-      #  run: make push
-      #  env:
-      #    DOCKER_USER: ${{ secrets.DOCKER_USER }}
-      #    DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      - name: Publish to DockerHub
+        run: make push
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
