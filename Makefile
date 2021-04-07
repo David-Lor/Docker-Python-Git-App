@@ -12,12 +12,12 @@ build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
 		-t ${IMAGE_NAME}
 
 buildx: ## build & push the image with docker buildx
-	docker buildx build . \
+	docker buildx build . --file=./Dockerfile \
 		--build-arg USERNAME=${USERNAME} \
 		--build-arg BASE_TAG=${BASE_TAG} \
 		--platform=${ARCH} \
 		--tag=${PUSH_IMAGE_NAME} \
-		--file=./Dockerfile
+		--output type=image,push=true
 
 test: ## run tests in parallel
 	pytest -sv -n auto tools/tests
