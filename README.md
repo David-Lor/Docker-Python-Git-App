@@ -92,6 +92,8 @@ The steps that run when the container starts are:
 
 ## Changelog
 
+- 0.2.1
+    - Allow cloning SSH repositories, and support using private keys
 - 0.1.1
     - Upload to DockerHub from Github Workflow
     - Fix cmd in Dockerfile, change from `bash` to `sh` (Alpine compatibility)
@@ -105,7 +107,7 @@ The steps that run when the container starts are:
 ## TODO
 
 - Allow setting GIT repository through CMD
-- Load SSH private key for cloning SSH git repositories (from path or secret)
+- Specify trusted host for SSH cloning
 - Create multi-arch images
 - Run as root with an env variable - or another image tag
 - Tag & upload images based on official Python image tags, plus versions of this repository

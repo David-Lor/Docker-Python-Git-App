@@ -4,7 +4,8 @@ FROM python:${BASE_TAG}
 # ENV variables
 ENV GIT_REPOSITORY="" \
     APP_NAME="App" \
-    GIT_BRANCH=""
+    GIT_BRANCH="" \
+    PRIVATE_KEY_LOCATION=""
 ARG USERNAME=user
 
 # Add a non-root user

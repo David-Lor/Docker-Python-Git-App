@@ -4,3 +4,6 @@
 *pycache*
 .pytest_cache
 *.pyc
+ssh_key*
+*.pem
+*.pub

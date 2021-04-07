@@ -6,3 +6,6 @@ tools/
 examples/
 .vscode/
 .idea/
+ssh_key*
+*.pem
+*.pub

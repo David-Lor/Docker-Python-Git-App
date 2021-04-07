@@ -36,5 +36,9 @@ push: ## push built image to dockerhub
 	docker tag ${IMAGE_NAME} ${PUSH_IMAGE_NAME}
 	docker push ${PUSH_IMAGE_NAME}
 
+generate-ssh-key: ## create a new public and private key set in current directory
+	ssh-keygen -b 2048 -t rsa -f ./ssh_key -q -N ""
+	mv ./ssh_key ./ssh_key.pem
+
 help: ## show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
