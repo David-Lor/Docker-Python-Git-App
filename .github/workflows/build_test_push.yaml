@@ -1,5 +1,6 @@
 name: Build, Test & Push
 on:
+  workflow_dispatch: {}
   push: {}
   schedule:
     - cron: '0 0 * * *'  # every day at 0h
@@ -22,7 +23,7 @@ jobs:
           architecture: "x64"
       - name: Install test requirements
         run: make test-install-requirements
-      - name: Test
+      - name: Test "build"
         run: make test-build
 
   build_testNoBuild_push:
@@ -47,7 +48,7 @@ jobs:
           - 3.7-slim-stretch
 
     steps:
-      # Preparation
+      # Setup
       - name: Checkout
         uses: actions/checkout@master
         with:
@@ -59,24 +60,30 @@ jobs:
           architecture: "x64"
       - name: Install test requirements
         run: make test-install-requirements
+      - name: Install QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Install Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      # TODO Cache install of dependencies (possible for "uses" actions?)
+      #  https://docs.github.com/es/actions/guides/caching-dependencies-to-speed-up-workflows
 
-      # Build image
-      - name: Build
-        run: make build BASE_TAG=${{ matrix.base_tag }}
-
-      # Test no-build, with built image
-      - name: Test
-        run: make test-nobuild
-        env:
-          IMAGE_TAG: ${{ matrix.base_tag }}
-
-      # Push build image to DockerHub (only if branch is "master")
+      # Docker login
       - name: Login to DockerHub
         if: github.ref == 'refs/heads/master'
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
-      - name: Publish to DockerHub
+
+      # Build for linux/amd64 & run "no-build" tests
+      - name: Build (arch=default)
+        run: make build BASE_TAG=${{ matrix.base_tag }}
+      - name: Test "no-build" (arch=default)
+        run: make test-nobuild
+        env:
+          IMAGE_TAG: ${{ matrix.base_tag }}
+
+      # Build & push for all archs
+      - name: Build & Push for all archs
         if: github.ref == 'refs/heads/master'
-        run: make push BASE_TAG=${{ matrix.base_tag }}
+        run: make buildx BASE_TAG=${{ matrix.base_tag }} ARCH=linux/amd64,linux/arm/v7
