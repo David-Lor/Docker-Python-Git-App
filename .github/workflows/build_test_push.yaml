@@ -74,8 +74,15 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      # TODO build & test before pushing for linux/amd64
+      # Build for linux/amd64 & run "no-build" tests
+      - name: Build (arch=default)
+        run: make build BASE_TAG=${{ matrix.base_tag }}
+      - name: Test (arch=default)
+        run: make test-nobuild
+        env:
+          IMAGE_TAG: ${{ matrix.base_tag }}-multiarch-test  # TODO remove test tag suffix
 
+      # Build & push for all archs
       - name: Build & Push
         run: make buildx BASE_TAG=${{ matrix.base_tag }} ARCH=linux/amd64,linux/arm/v7
         # TODO rename BASE_TAG after testing
