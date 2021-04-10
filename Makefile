@@ -2,8 +2,8 @@
 
 USERNAME := "user"
 BASE_TAG := "latest"
-IMAGE_NAME := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)-multiarch-test"  # TODO remove test tag suffix
-PUSH_IMAGE_NAME := "davidlor/python-git-app:$(BASE_TAG)-multiarch-test"  # TODO remove test tag suffix
+IMAGE_NAME := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)"
+PUSH_IMAGE_NAME := "davidlor/python-git-app:$(BASE_TAG)"
 
 build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
 	docker build . \
