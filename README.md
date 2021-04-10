@@ -92,6 +92,8 @@ The steps that run when the container starts are:
 
 ## Changelog
 
+- 0.2.1
+    - Multi-arch support in Github Workflow
 - 0.1.1
     - Upload to DockerHub from Github Workflow
     - Fix cmd in Dockerfile, change from `bash` to `sh` (Alpine compatibility)
