@@ -29,6 +29,7 @@ Some examples of projects compliant with this structure are:
 - [Python-HelloWorld](https://github.com/David-Lor/Python-HelloWorld) (used as Git repository for testing this image)
 - [MQTT2ETCD](https://github.com/David-Lor/MQTT2ETCD)
 - [VigoBusAPI](https://github.com/David-Lor/Python_VigoBusAPI)
+- [TelegramBot-Webhook-Updates-Receiver-Service](https://github.com/David-Lor/TelegramBot-Webhook-Updates-Receiver-Service)
 
 ## Getting started
 
@@ -45,12 +46,12 @@ docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git
 - (ARG) `BASE_TAG`: tag of the [Python base image](https://hub.docker.com/_/python/) to be used for the build (optional, default: _latest_)
 
 Only required variable is (ENV) `GIT_REPOSITORY`.
-The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg).
+The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), used on image build.
 
 ## Available tags
 
 The tags available for the image are a limited selection of tags used in the [official Python image](https://hub.docker.com/_/python/).
-The building and publishing of the images into DockerHub is performed by [this Github Actions workflow](https://github.com/David-Lor/Docker-Python-Git-App/blob/cdd45743d323afcea94014305eb5cc177eb96589/.github/workflows/build_test_push.yaml#L36),
+The building and publishing of the images into DockerHub is performed by [this Github Actions workflow](https://github.com/David-Lor/Docker-Python-Git-App/blob/master/.github/workflows/build_test_push.yaml#L37),
 where the full list of supported tags is defined.
 
 ## Building
