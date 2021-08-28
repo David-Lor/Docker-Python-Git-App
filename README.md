@@ -11,7 +11,9 @@ The container will handle the git clone and requirements installing before the a
 - Clone from GIT repository
 - Choose branch to clone
 - Install requirements from `requirements.txt` file
-- Multiple tags available, with same names as those in the [official Python image](https://hub.docker.com/_/python/)
+- [Multiple tags available](tags.json), with same names as those in the [official Python image](https://hub.docker.com/_/python/)
+- Multi-arch buildings: `linux/arm64`, `linux/arm/v7`
+- Daily buildings, for keeping images updated with the official Python images used as base
 
 ## Important! Required Python project structure
 
@@ -93,6 +95,10 @@ The steps that run when the container starts are:
 
 ## Changelog
 
+- dev
+    - Avoid triggering Github Workflow on tag push
+    - Cache Docker builds on Github Workflow
+    - Refactor Github Workflow for running "Test No-Build" and "Build&Push" jobs separately
 - 0.2.1
     - Multi-arch support in Github Workflow
 - 0.1.1
