@@ -95,7 +95,7 @@ The steps that run when the container starts are:
 
 ## Changelog
 
-- dev
+- 0.2.2
     - Avoid triggering Github Workflow on tag push
     - Cache Docker builds on Github Workflow
     - Refactor Github Workflow for running "Test No-Build" and "Build&Push" jobs separately
