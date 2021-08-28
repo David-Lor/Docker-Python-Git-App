@@ -6,13 +6,13 @@ IMAGE_NAME := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)"
 PUSH_IMAGE_NAME := "davidlor/python-git-app:$(BASE_TAG)"
 
 build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
-	docker build . \
+	docker build . --pull \
 		--build-arg USERNAME=${USERNAME} \
 		--build-arg BASE_TAG=${BASE_TAG} \
 		-t ${IMAGE_NAME}
 
 buildx: ## build & push the image with docker buildx
-	docker buildx build . --file=./Dockerfile \
+	docker buildx build . --file=./Dockerfile --pull \
 		--build-arg USERNAME=${USERNAME} \
 		--build-arg BASE_TAG=${BASE_TAG} \
 		--platform=${ARCH} \
@@ -43,6 +43,9 @@ test-install-requirements: ## pip install requirements for tests
 push: ## push built image to dockerhub
 	docker tag ${IMAGE_NAME} ${PUSH_IMAGE_NAME}
 	docker push ${PUSH_IMAGE_NAME}
+
+pull-base: ## pull base image from dockerhub
+	docker pull python:${BASE_TAG}
 
 help: ## show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
