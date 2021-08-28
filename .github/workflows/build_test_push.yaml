@@ -1,7 +1,9 @@
 name: Build, Test & Push
 on:
   workflow_dispatch: {}
-  push: {}
+  push:
+    branches:
+      - '**'  # all branches
   schedule:
     - cron: '0 0 * * *'  # every day at 0h
 
@@ -12,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Setup
       - name: Checkout
         uses: actions/checkout@master
         with:
@@ -23,6 +26,8 @@ jobs:
           architecture: "x64"
       - name: Install test requirements
         run: make test-install-requirements
+
+      # Test
       - name: Test "build"
         run: make test-build
 
