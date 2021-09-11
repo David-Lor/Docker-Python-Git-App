@@ -13,7 +13,7 @@ The container will handle the git clone and requirements installing before the a
 - Install requirements from `requirements.txt` file
 - [Multiple tags available](tags.json), with same names as those in the [official Python image](https://hub.docker.com/_/python/)
 - Multi-arch buildings: `linux/arm64`, `linux/arm/v7`
-- Daily buildings, for keeping images updated with the official Python images used as base
+- Daily buils, for keeping images updated with the official Python images used as base
 
 ## Important! Required Python project structure
 
@@ -36,7 +36,7 @@ Some examples of projects compliant with this structure are:
 ## Getting started
 
 ```bash
-docker run -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" davidlor/python-git-app
+docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" davidlor/python-git-app
 ```
 
 ## ENV Variables & ARGs
@@ -84,6 +84,34 @@ The steps that run when the container starts are:
     4. create a status file to mark the container already ran this setup process
 - Start the cloned app
 
+## Caching requirements
+
+The startup process of new containers may be lighten up by persisting the local cache (and even the installed libraries) in volumes.
+This way, multiple containers, or the same container when being recreated for upgrading or reinstalling the running application, can skip the download and/or installing process.
+The two directories that can be bind to volumes are:
+
+- `/home/user/.cache`: cached libraries; mounting this volume will avoid downloading requirements
+- `/home/user/.local`: installed libraries; mounting this volume will avoid installing requirements
+
+**It is important that the mounted directories are owned by UID:GID 1000:1000**, since the container runs as a non-root user.
+
+Example:
+
+```bash
+# Create the volumes, unless using binds
+docker volume create pythongitapp-cache
+docker volume create pythongitapp-local
+
+# Change ownership
+docker run -it --rm -v pythongitapp-local:/mnt/local -v pythongitapp-cache:/mnt/cache alpine sh -c "chown 1000:1000 /mnt/*"
+
+# Run
+docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" -e GIT_BRANCH="fastapi" -v pythongitapp-local:/home/user/.local -v pythongitapp-cache:/home/user/.cache davidlor/python-git-app
+
+# Ctrl+C to stop it (container will be removed)
+# "docker run" again for verifying that requirements are not downloaded/installed again
+```
+
 ## Useful Make utils
 
 - `make test` - run tests (requires root/sudo & pytest)
@@ -114,7 +142,8 @@ The steps that run when the container starts are:
 ## TODO
 
 - Allow setting GIT repository through CMD
+- Allow disabling pip cache
+- Allow running arbitrary command for app initialization
 - Load SSH private key for cloning SSH git repositories (from path or secret)
-- Create multi-arch images
 - Run as root with an env variable - or another image tag
 - Tag & upload images based on official Python image tags, plus versions of this repository
