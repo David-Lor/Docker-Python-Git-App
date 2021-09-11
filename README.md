@@ -53,8 +53,8 @@ The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/
 ## Available tags
 
 The tags available for the image are a limited selection of tags used in the [official Python image](https://hub.docker.com/_/python/).
-The building and publishing of the images into DockerHub is performed by [this Github Actions workflow](https://github.com/David-Lor/Docker-Python-Git-App/blob/master/.github/workflows/build_test_push.yaml#L37),
-where the full list of supported tags is defined.
+The list of currently supported tags, used for daily builds, are available in the [tags.json](tags.json) file.
+Older images no longer supported may remain in [DockerHub](https://hub.docker.com/r/davidlor/python-git-app/tags?page=1&ordering=-last_updated).
 
 ## Building
 
@@ -123,6 +123,9 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.2.3
+  - Add new tags: slim-buster, rc, rc-buster, rc-slim, rc-slim-buster, rc-alpine, 3.9, 3.9-slim, 3.9-alpine, 3.8, 3.8-slim, 3.8-alpine, 3.7, 3.7-slim, 3.7-alpine, 3.6-slim
+  - Delete tags: 3.7.9-buster, 3.7.9-alpine, 3.7-slim-stretch, 3.6-slim-stretch, 3.5-slim-stretch
 - 0.2.2
     - Avoid triggering Github Workflow on tag push
     - Cache Docker builds on Github Workflow
