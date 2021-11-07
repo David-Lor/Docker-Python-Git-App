@@ -90,7 +90,7 @@ jobs:
 
   testNoBuild:
     # Run "no-build" tests (building image for linux/amd64)
-    name: "[python:${{ matrix.base_tag }} Test (no-build)"
+    name: "[python:${{ matrix.base_tag }}] Test (no-build)"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
@@ -131,7 +131,7 @@ jobs:
           IMAGE_TAG: ${{ matrix.base_tag }}
 
 
-  build_push:
+  buildPush:
     # Build and push to DockerHub if current branch is "master"
     name: "[python:${{ matrix.base_tag }}] Build & Push (multiarch)"
     runs-on: ubuntu-latest
