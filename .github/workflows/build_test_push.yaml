@@ -5,7 +5,7 @@ on:
     branches:
       - '**'  # all branches
   schedule:
-    - cron: '0 0 * * *'  # every day at 0h
+    - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
 
 jobs:
   testBuild:
