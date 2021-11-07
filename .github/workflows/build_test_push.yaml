@@ -5,13 +5,46 @@ on:
     branches:
       - '**'  # all branches
   schedule:
-    - cron: '0 0 * * *'  # every day at 0h
+    - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
 
 jobs:
+
+  flagTestBuild:
+    # Generate condition: if file/s changed involve changes on the image, or trigger is cron: test & build jobs must run
+    name: "Conditional: run test & build jobs"
+    runs-on: ubuntu-latest
+    outputs:
+      flag: ${{ env.flag }}
+
+    steps:
+      # Setup
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      # Perform validation
+      - name: Verify if any of the image-involved files changed
+        id: changed-files
+        uses: tj-actions/changed-files@v11.5
+        with:
+          files: |
+            .dockerignore
+            Dockerfile
+            tags.json
+            tools/**
+            scripts/**
+      - name: Set flag for triggering test & build jobs
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' }}
+        run: echo "flag=true" >> $GITHUB_ENV
+
   testBuild:
     # Run "build" tests
     name: Test (build)
     runs-on: ubuntu-latest
+    if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
+    needs:
+      - flagTestBuild
 
     steps:
       # Setup
@@ -36,6 +69,9 @@ jobs:
     # Parse and set the base_tag matrix to be used by following jobs
     name: Parse & Set tags matrix
     runs-on: ubuntu-latest
+    if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
+    needs:
+      - flagTestBuild
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
 
@@ -54,9 +90,11 @@ jobs:
 
   testNoBuild:
     # Run "no-build" tests (building image for linux/amd64)
-    name: "[python:${{ matrix.base_tag }} Test (no-build)"
+    name: "[python:${{ matrix.base_tag }}] Test (no-build)"
     runs-on: ubuntu-latest
+    if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
+      - flagTestBuild
       - testBuild
       - tagsMatrix
     strategy:
@@ -93,12 +131,13 @@ jobs:
           IMAGE_TAG: ${{ matrix.base_tag }}
 
 
-  build_push:
+  buildPush:
     # Build and push to DockerHub if current branch is "master"
     name: "[python:${{ matrix.base_tag }}] Build & Push (multiarch)"
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: ${{ needs.flagTestBuild.outputs.flag == 'true' && github.ref == 'refs/heads/master' }}
     needs:
+      - flagTestBuild
       - testBuild
       - testNoBuild
       - tagsMatrix

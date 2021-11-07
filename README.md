@@ -13,7 +13,7 @@ The container will handle the git clone and requirements installing before the a
 - Install requirements from `requirements.txt` file
 - [Multiple tags available](tags.json), with same names as those in the [official Python image](https://hub.docker.com/_/python/)
 - Multi-arch buildings: `linux/arm64`, `linux/arm/v7`
-- Daily buils, for keeping images updated with the official Python images used as base
+- Automatic builds on monday, wednesday and friday, for keeping images updated with the official base Python images
 
 ## Important! Required Python project structure
 
@@ -123,6 +123,9 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.2.4
+  - Update Build-Test-Push workflow: reduce cron frequency to 3 days per week; only test&build when changing files involving the image
+  - Add new workflows: Tag from PR, Update license year
 - 0.2.3
   - Add new tags: slim-buster, rc, rc-buster, rc-slim, rc-slim-buster, rc-alpine, 3.9, 3.9-slim, 3.9-alpine, 3.8, 3.8-slim, 3.8-alpine, 3.7, 3.7-slim, 3.7-alpine, 3.6-slim
   - Delete tags: 3.7.9-buster, 3.7.9-alpine, 3.7-slim-stretch, 3.6-slim-stretch, 3.5-slim-stretch

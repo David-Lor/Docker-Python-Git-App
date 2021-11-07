@@ -1,0 +1,60 @@
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (tag) to set"
+        required: true
+
+name: Tag on merged PR
+
+jobs:
+  tag:
+    name: Tag merged PR
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: "ubuntu-latest"
+    steps:
+      # Setup
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+
+      # Extract tag
+      - name: Get Pull Request data
+        if: github.event_name == 'pull_request'
+        id: PR
+        uses: 8BitJonny/gh-get-current-pr@1.1.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          filterOutClosed: false
+      - name: Extract tag from Pull Request data
+        run: "python .github/workflows/tag/extract_tag_from_pr.py"
+        if: github.event_name == 'pull_request' && steps.PR.outputs.number
+        env:
+          PR_JSON_DATA: "${{ steps.PR.outputs.pr }}"
+      - name: Extract tag from Workflow Dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: echo ${{ github.event.inputs.version }} > version.txt
+      - name: Read tag from output file
+        id: tagRead
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: "./version.txt"
+
+      # Push tag
+      - name: Tag commit
+        uses: tvdias/github-tagger@v0.0.1
+        if: steps.tagRead.outputs.content
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "${{ steps.tagRead.outputs.content }}"
