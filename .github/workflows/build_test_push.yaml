@@ -8,10 +8,43 @@ on:
     - cron: '0 0 * * *'  # every day at 0h
 
 jobs:
+
+  validateChangedFiles:
+    # Generate condition: if file/s changed involve changes on the image, or trigger is cron
+    name: "Conditional: files changed involve Docker image changes"
+    runs-on: ubuntu-latest
+    outputs:
+      anyChanged: ${{ env.anyChanged }}
+
+    steps:
+      # Setup
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+
+      # Perform validation
+      - name: Verify if any of the image-involved files changed
+        id: changed-files
+        uses: tj-actions/changed-files@v11.5
+        with:
+          files: |
+            .dockerignore
+            Dockerfile
+            tags.json
+            tools/**
+            scripts/**
+      - name: Set environment variable for triggering next jobs
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' }}
+        run: echo "anyChanged=true" >> $GITHUB_ENV
+
   testBuild:
     # Run "build" tests
     name: Test (build)
     runs-on: ubuntu-latest
+    if: ${{ needs.validateChangedFiles.outputs.anyChanged == 'true' }}
+    needs:
+      - validateChangedFiles
 
     steps:
       # Setup
@@ -36,6 +69,9 @@ jobs:
     # Parse and set the base_tag matrix to be used by following jobs
     name: Parse & Set tags matrix
     runs-on: ubuntu-latest
+    if: ${{ needs.validateChangedFiles.outputs.anyChanged == 'true' }}
+    needs:
+      - validateChangedFiles
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
 
@@ -56,7 +92,9 @@ jobs:
     # Run "no-build" tests (building image for linux/amd64)
     name: "[python:${{ matrix.base_tag }} Test (no-build)"
     runs-on: ubuntu-latest
+    if: ${{ needs.validateChangedFiles.outputs.anyChanged == 'true' }}
     needs:
+      - validateChangedFiles
       - testBuild
       - tagsMatrix
     strategy:
@@ -97,8 +135,9 @@ jobs:
     # Build and push to DockerHub if current branch is "master"
     name: "[python:${{ matrix.base_tag }}] Build & Push (multiarch)"
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: ${{ needs.validateChangedFiles.outputs.anyChanged == 'true' && github.ref == 'refs/heads/master' }}
     needs:
+      - validateChangedFiles
       - testBuild
       - testNoBuild
       - tagsMatrix
