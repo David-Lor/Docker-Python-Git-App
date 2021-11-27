@@ -82,5 +82,9 @@
   {
     "fromImage": "python:3.6-slim",
     "toTag": "3.6-slim"
+  },
+  {
+    "fromImage": "pyston/pyston:latest",
+    "toTag": "pyston"
   }
 ]
