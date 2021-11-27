@@ -1,90 +1,117 @@
 [
   {
     "fromImage": "python:latest",
-    "toTag": "latest"
+    "toTag": "latest",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:slim",
-    "toTag": "slim"
+    "toTag": "slim",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:slim-buster",
-    "toTag": "slim-buster"
+    "toTag": "slim-buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:rc",
-    "toTag": "rc"
+    "toTag": "rc",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:rc-buster",
-    "toTag": "rc-buster"
+    "toTag": "rc-buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:rc-slim",
-    "toTag": "rc-slim"
+    "toTag": "rc-slim",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:rc-slim-buster",
-    "toTag": "rc-slim-buster"
+    "toTag": "rc-slim-buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:rc-alpine",
-    "toTag": "rc-alpine"
+    "toTag": "rc-alpine",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:alpine",
-    "toTag": "alpine"
+    "toTag": "alpine",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:buster",
-    "toTag": "buster"
+    "toTag": "buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.9",
-    "toTag": "3.9"
+    "toTag": "3.9",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.9-slim",
-    "toTag": "3.9-slim"
+    "toTag": "3.9-slim",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.9-buster",
-    "toTag": "3.9-buster"
+    "toTag": "3.9-buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.9-alpine",
-    "toTag": "3.9-alpine"
+    "toTag": "3.9-alpine",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.8",
-    "toTag": "3.8"
+    "toTag": "3.8",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.8-slim",
-    "toTag": "3.8-slim"
+    "toTag": "3.8-slim",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.8-buster",
-    "toTag": "3.8-buster"
+    "toTag": "3.8-buster",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.8-alpine",
-    "toTag": "3.8-alpine"
+    "toTag": "3.8-alpine",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.7",
-    "toTag": "3.7"
+    "toTag": "3.7",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.7-alpine",
-    "toTag": "3.7-alpine"
+    "toTag": "3.7-alpine",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "python:3.6-slim",
-    "toTag": "3.6-slim"
+    "toTag": "3.6-slim",
+    "arch": "linux/amd64,linux/arm/v7"
   },
   {
     "fromImage": "pyston/pyston:latest",
-    "toTag": "pyston"
+    "toTag": "pyston",
+    "arch": "linux/amd64,linux/arm/v7"
+  },
+  {
+    "fromImage": "pypy:latest",
+    "toTag": "pypy",
+    "arch": "linux/amd64"
   }
 ]

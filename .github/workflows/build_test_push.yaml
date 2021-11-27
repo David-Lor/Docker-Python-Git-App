@@ -161,8 +161,8 @@ jobs:
         run: |
           echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
           echo "toTag=${{ matrix.image.toTag }}" >> $GITHUB_ENV
+          echo "arch=${{ matrix.image.arch }}" >> $GITHUB_ENV
           echo "buildxPush=false" >> $GITHUB_ENV
-          echo "arch=linux/amd64,linux/arm/v7" >> $GITHUB_ENV
       - name: Set buildx push flag
         if: github.ref == 'refs/heads/master'
         run: |
