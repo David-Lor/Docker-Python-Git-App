@@ -31,7 +31,7 @@ jobs:
           files: |
             .dockerignore
             Dockerfile
-            tags.json
+            images.json
             tools/**
             scripts/**
       - name: Set flag for triggering test & build jobs
@@ -65,9 +65,9 @@ jobs:
         run: make test-build
 
 
-  tagsMatrix:
-    # Parse and set the base_tag matrix to be used by following jobs
-    name: Parse & Set tags matrix
+  imagesMatrix:
+    # Parse and set the images matrix to be used by following jobs
+    name: Parse & Set images matrix
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
@@ -84,23 +84,22 @@ jobs:
       - name: Load & Set matrix variable
         id: set_matrix
         run: |
-          TAGS=$(echo $(cat tags.json) | sed 's/ //g' )
-          echo "::set-output name=matrix::$TAGS"
+          echo "::set-output name=matrix::$(echo $(cat images.json) | sed 's/ //g' )"
 
 
   testNoBuild:
-    # Run "no-build" tests (building image for linux/amd64)
-    name: "[python:${{ matrix.base_tag }}] Test (no-build)"
+    # Run "no-build" tests (pre-building image for linux/amd64)
+    name: "[${{ matrix.image.fromImage }}] Test (no-build)"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
       - flagTestBuild
       - testBuild
-      - tagsMatrix
+      - imagesMatrix
     strategy:
       fail-fast: false
       matrix:
-        base_tag: ${{ fromJson(needs.tagsMatrix.outputs.matrix) }}
+        image: ${{ fromJson(needs.imagesMatrix.outputs.matrix) }}
 
     steps:
       # Setup
@@ -115,36 +114,38 @@ jobs:
           architecture: "x64"
       - name: Install test requirements
         run: make test-install-requirements
+      - name: Set environment variables
+        run: |
+          echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
+          echo "toImage=python-git-app:${{ matrix.image.toTag }}" >> $GITHUB_ENV
 
       # Build
       - name: Docker cache
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
         with:
-          key: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}-{hash}"
-          restore-keys: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}"
+          key: "DockerPythonGitApp-docker-cache-${{ env.fromImage }}-{hash}"
+          restore-keys: "DockerPythonGitApp-docker-cache-${{ env.fromImage }}"
       - name: Build
-        run: make build BASE_TAG=${{ matrix.base_tag }}
+        run: make build FROM_IMAGE=${{ env.fromImage }} TO_IMAGE=${{ env.toImage }}
       - name: Test "no-build" (arch=default)
-        run: make test-nobuild
-        env:
-          IMAGE_TAG: ${{ matrix.base_tag }}
+        run: make test-nobuild FROM_IMAGE=${{ env.toImage }}
 
 
   buildPush:
     # Build and push to DockerHub if current branch is "master"
-    name: "[python:${{ matrix.base_tag }}] Build & Push (multiarch)"
+    name: "[${{ matrix.image.fromImage }} -> ${{ matrix.image.toTag }}] Build & Push (multiarch)"
     runs-on: ubuntu-latest
-    if: ${{ needs.flagTestBuild.outputs.flag == 'true' && github.ref == 'refs/heads/master' }}
+    if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
       - flagTestBuild
       - testBuild
       - testNoBuild
-      - tagsMatrix
+      - imagesMatrix
     strategy:
       fail-fast: false
       matrix:
-        base_tag: ${{ fromJson(needs.tagsMatrix.outputs.matrix) }}
+        image: ${{ fromJson(needs.imagesMatrix.outputs.matrix) }}
 
     steps:
       # Setup
@@ -156,9 +157,20 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Install Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - name: Set environment variables
+        run: |
+          echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
+          echo "toTag=${{ matrix.image.toTag }}" >> $GITHUB_ENV
+          echo "arch=${{ matrix.image.arch }}" >> $GITHUB_ENV
+          echo "buildxPush=false" >> $GITHUB_ENV
+      - name: Set buildx push flag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "buildxPush=true >> $GITHUB_ENV"
 
       # Docker login
       - name: Login to DockerHub
+        if: ${{ env.buildxPush == 'true' }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USER }}
@@ -172,4 +184,4 @@ jobs:
           key: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}-{hash}"
           restore-keys: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}"
       - name: Build & Push for all archs
-        run: make buildx BASE_TAG=${{ matrix.base_tag }} ARCH=linux/amd64,linux/arm/v7
+        run: make buildx FROM_IMAGE=${{ env.fromImage }} TO_TAG=${{ env.toTag }} BUILDX_PUSH=${{ env.buildxPush }} ARCH=${{ env.arch }}
