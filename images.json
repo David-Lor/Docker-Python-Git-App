@@ -1,0 +1,86 @@
+[
+  {
+    "fromImage": "python:latest",
+    "toTag": "latest"
+  },
+  {
+    "fromImage": "python:slim",
+    "toTag": "slim"
+  },
+  {
+    "fromImage": "python:slim-buster",
+    "toTag": "slim-buster"
+  },
+  {
+    "fromImage": "python:rc",
+    "toTag": "rc"
+  },
+  {
+    "fromImage": "python:rc-buster",
+    "toTag": "rc-buster"
+  },
+  {
+    "fromImage": "python:rc-slim",
+    "toTag": "rc-slim"
+  },
+  {
+    "fromImage": "python:rc-slim-buster",
+    "toTag": "rc-slim-buster"
+  },
+  {
+    "fromImage": "python:rc-alpine",
+    "toTag": "rc-alpine"
+  },
+  {
+    "fromImage": "python:alpine",
+    "toTag": "alpine"
+  },
+  {
+    "fromImage": "python:buster",
+    "toTag": "buster"
+  },
+  {
+    "fromImage": "python:3.9",
+    "toTag": "3.9"
+  },
+  {
+    "fromImage": "python:3.9-slim",
+    "toTag": "3.9-slim"
+  },
+  {
+    "fromImage": "python:3.9-buster",
+    "toTag": "3.9-buster"
+  },
+  {
+    "fromImage": "python:3.9-alpine",
+    "toTag": "3.9-alpine"
+  },
+  {
+    "fromImage": "python:3.8",
+    "toTag": "3.8"
+  },
+  {
+    "fromImage": "python:3.8-slim",
+    "toTag": "3.8-slim"
+  },
+  {
+    "fromImage": "python:3.8-buster",
+    "toTag": "3.8-buster"
+  },
+  {
+    "fromImage": "python:3.8-alpine",
+    "toTag": "3.8-alpine"
+  },
+  {
+    "fromImage": "python:3.7",
+    "toTag": "3.7"
+  },
+  {
+    "fromImage": "python:3.7-alpine",
+    "toTag": "3.7-alpine"
+  },
+  {
+    "fromImage": "python:3.6-slim",
+    "toTag": "3.6-slim"
+  }
+]

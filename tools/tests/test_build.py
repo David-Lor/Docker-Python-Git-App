@@ -11,8 +11,8 @@ class TestBuild(BaseTest):
         """
         image, output = self.build_image()
         assert image in output
-        
-        output = self.run_container(image_name=image)
+
+        output = self.run_container(image=image)
         assert OUTPUT_SUCCESS in output
 
     def test_build_username(self):
@@ -20,24 +20,24 @@ class TestBuild(BaseTest):
         """
         image, output = self.build_image(user=USERNAME)
         assert image in output
-        
-        output = self.run_container(image_name=image, final_args=["pwd"])
+
+        output = self.run_container(image=image, final_args=["pwd"])
         assert "/home/{}".format(USERNAME) in output
 
     def test_build_tag_alpine(self):
-        """Test building the image using the 'alpine' base tag
+        """Test building the image using the 'python:alpine' base image
         """
-        image, output = self.build_image(base_tag="alpine")
+        image, output = self.build_image(from_image="python:alpine")
         assert image in output
 
-        output = self.run_container(image_name=image, args=["--entrypoint", "which"], final_args=["apk"])
+        output = self.run_container(image=image, args=["--entrypoint", "which"], final_args=["apk"])
         assert "/sbin/apk" in output
 
     def test_build_python_27(self):
-        """Test building the image using the '2.7-alpine' base tag
+        """Test building the image using the 'python:2.7-alpine' base image
         """
-        image, output = self.build_image(base_tag="2.7-alpine")
+        image, output = self.build_image(from_image="python:2.7-alpine")
         assert image in output
 
-        output = self.run_container(image_name=image, final_args=["python", "-V"])
+        output = self.run_container(image=image, final_args=["python", "-V"])
         assert output.startswith("Python 2.7")

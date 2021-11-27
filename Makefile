@@ -1,23 +1,26 @@
 .DEFAULT_GOAL := help
 
 USERNAME := "user"
-BASE_TAG := "latest"
-IMAGE_NAME := "$(shell cat tools/built_image_name.txt):$(BASE_TAG)"
-PUSH_IMAGE_NAME := "davidlor/python-git-app:$(BASE_TAG)"
+FROM_IMAGE := "python:latest"
+TO_TAG := "latest"
+TO_IMAGE := "python-git-app:$(TO_TAG)"
+PUSH_IMAGE := "davidlor/python-git-app:$(TO_TAG)"
+BUILDX_PUSH := "false"
+ARCH := "amd64"
 
-build: ## build the image. env variables: USERNAME, BASE_TAG, IMAGE_TAG
+build: ## build the image. env variables: USERNAME, FROM_IMAGE, TO_TAG/TO_IMAGE
 	docker build . --pull \
 		--build-arg USERNAME=${USERNAME} \
-		--build-arg BASE_TAG=${BASE_TAG} \
-		-t ${IMAGE_NAME}
+		--build-arg FROM_IMAGE=${FROM_IMAGE} \
+		-t ${TO_IMAGE}
 
-buildx: ## build & push the image with docker buildx
+buildx: ## build the image with docker buildx; push optionally. env variables: USERNAME, FROM_IMAGE, TO_TAG/TO_IMAGE, ARCH, BUILDX_PUSH
 	docker buildx build . --file=./Dockerfile --pull \
 		--build-arg USERNAME=${USERNAME} \
-		--build-arg BASE_TAG=${BASE_TAG} \
+		--build-arg FROM_IMAGE=${FROM_IMAGE} \
 		--platform=${ARCH} \
-		--tag=${PUSH_IMAGE_NAME} \
-		--output type=image,push=true
+		--tag=${PUSH_IMAGE} \
+		--output type=image,push=${BUILDX_PUSH}
 
 test: ## run tests in parallel
 	pytest -sv -n auto tools/tests
@@ -41,11 +44,11 @@ test-install-requirements: ## pip install requirements for tests
 	pip install -r tools/tests/requirements.txt
 
 push: ## push built image to dockerhub
-	docker tag ${IMAGE_NAME} ${PUSH_IMAGE_NAME}
-	docker push ${PUSH_IMAGE_NAME}
+	docker tag ${TO_IMAGE} ${PUSH_IMAGE}
+	docker push ${PUSH_IMAGE}
 
 pull-base: ## pull base image from dockerhub
-	docker pull python:${BASE_TAG}
+	docker pull ${FROM_IMAGE}
 
 help: ## show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
