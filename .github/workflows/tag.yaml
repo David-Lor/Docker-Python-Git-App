@@ -38,7 +38,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           filterOutClosed: false
       - name: Extract tag from Pull Request data
-        run: "python .github/workflows/tag/extract_tag_from_pr.py"
+        run: "python .github/workflows/scripts/extract_tag_from_pr.py"
         if: github.event_name == 'pull_request' && steps.PR.outputs.number
         env:
           PR_JSON_DATA: "${{ steps.PR.outputs.pr }}"

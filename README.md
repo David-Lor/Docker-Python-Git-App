@@ -11,7 +11,7 @@ The container will handle the git clone and requirements installing before the a
 - Clone from GIT repository
 - Choose branch to clone
 - Install requirements from `requirements.txt` file
-- [Multiple tags available](tags.json), with same names as those in the [official Python image](https://hub.docker.com/_/python/)
+- [Multiple base images & tags available](images.json)
 - Multi-arch buildings: `linux/amd64`, `linux/arm/v7`
 - Automatic builds on monday, wednesday and friday, for keeping images updated with the official base Python images
 
@@ -45,16 +45,16 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 - `GIT_BRANCH`: set the Branch to clone from the Git repository (optional, default: use default branch)
 - `APP_NAME`: name of your app. This name is given to the directory where project is cloned on(optional, default: _PythonApp_)
 - (ARG) `USERNAME`: name of the user that is created on Dockerbuild to run the app with (optional, default: _user_)
-- (ARG) `BASE_TAG`: tag of the [Python base image](https://hub.docker.com/_/python/) to be used for the build (optional, default: _latest_)
+- (ARG) `BASE_IMAGE`: base full image name to be used for the build (optional, default: _python:latest_)
 
 Only required variable is (ENV) `GIT_REPOSITORY`.
 The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), used on image build.
 
 ## Available tags
 
-The tags available for the image are a limited selection of tags used in the [official Python image](https://hub.docker.com/_/python/).
-The list of currently supported tags, used for daily builds, are available in the [tags.json](tags.json) file.
-Older images no longer supported may remain in [DockerHub](https://hub.docker.com/r/davidlor/python-git-app/tags?page=1&ordering=-last_updated).
+- The tags available for the image are a limited selection of tags used in base images, such as the [official Python images](https://hub.docker.com/_/python/).
+- The list of currently supported base images and output tags, used for periodic auto-builds, are available on the [images.json](images.json) file.
+- Older images no longer supported may remain in [DockerHub](https://hub.docker.com/r/davidlor/python-git-app/tags?page=1&ordering=-last_updated).
 
 ## Building
 
@@ -64,12 +64,12 @@ for unsupported architedtures), you must do on host machine:
 - Clone this repository
 - Build a new Docker image using the repository directory - you can optionally set these ARGs:
   - a custom username using the `USERNAME` ARG
-  - a custom [Python base image](https://hub.docker.com/_/python/) tag using the `BASE_TAG` ARG (example: `alpine` or `slim`)
+  - a custom base image using the `BASE_IMAGE` ARG (example: `python:alpine` or `python:slim`)
 - Create a new container, setting up the desired ENV variables
 
 ```bash
 git clone https://github.com/David-Lor/Docker-Python-Autoclonable-App.git DockerPythonClonable
-docker build DockerPythonClonable --build-arg USERNAME=user --build-arg BASE_TAG=slim -t yourname/yourtag:yourversion
+docker build DockerPythonClonable --build-arg USERNAME=user --build-arg BASE_IMAGE=python:slim -t yourname/yourtag:yourversion
 docker run [...] yourname/yourtag:yourversion
 ```
 
@@ -117,9 +117,9 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 - `make test` - run tests (requires root/sudo & pytest)
 - `make test USE_SUDO=0` - run tests without sudo (if current user is root or part of docker group)
 - `make test-classic` - run tests sequentially (make test runs in parallel using pytest-xdist)
-- `test-install-requirements` - pip install test requirements
-- `sudo build BASE_TAG=slim` - build the image with the `python:slim` base image, and tag as `python-git-app:slim`
-- `sudo build BASE_TAG=alpine IMAGE_TAG=my-python:latest` - build the image with the `python:alpine` base image, and tag as `my-python:latest`
+- `make test-install-requirements` - pip install test requirements
+- `sudo make build FROM_IMAGE=python:slim TO_TAG=slim` - build the image with the `python:slim` base image, and tag as `python-git-app:slim`
+- `sudo make build FROM_IMAGE=python:alpine TO_IMAGE=my-python:latest` - build the image with the `python:alpine` base image, and tag as `my-python:latest`
 
 ## Changelog
 
