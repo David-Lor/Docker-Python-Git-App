@@ -166,7 +166,7 @@ jobs:
       - name: Set buildx push flag
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "buildxPush=true >> $GITHUB_ENV"
+          echo "buildxPush=true" >> $GITHUB_ENV
 
       # Docker login
       - name: Login to DockerHub
