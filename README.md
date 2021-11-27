@@ -12,7 +12,7 @@ The container will handle the git clone and requirements installing before the a
 - Choose branch to clone
 - Install requirements from `requirements.txt` file
 - [Multiple tags available](tags.json), with same names as those in the [official Python image](https://hub.docker.com/_/python/)
-- Multi-arch buildings: `linux/arm64`, `linux/arm/v7`
+- Multi-arch buildings: `linux/amd64`, `linux/arm/v7`
 - Automatic builds on monday, wednesday and friday, for keeping images updated with the official base Python images
 
 ## Important! Required Python project structure
