@@ -123,6 +123,10 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.3.1
+  - Add new tags: pyston (based on [pyston/pyston](https://hub.docker.com/r/pyston/pyston)), pypy (based on [pypy](https://hub.docker.com/_/pypy))
+  - Refactor tags.json into images.json, referencing complete source images, target tags and archs for each supported tag
+  - Refactor multiple variables for new images.json format on Makefile, tests and workflow
 - 0.2.4
   - Update Build-Test-Push workflow: reduce cron frequency to 3 days per week; only test&build when changing files involving the image
   - Add new workflows: Tag from PR, Update license year
