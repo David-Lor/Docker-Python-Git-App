@@ -1,11 +1,16 @@
 name: Build, Test & Push
 on:
-  workflow_dispatch: {}
   push:
     branches:
       - '**'  # all branches
   schedule:
     - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
+  workflow_dispatch:
+    inputs:
+      build:
+        description: "Run build steps? (yes/no)"
+        required: true
+        default: "yes"
 
 jobs:
 
@@ -35,7 +40,7 @@ jobs:
             tools/**
             scripts/**
       - name: Set flag for triggering test & build jobs
-        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' }}
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' || github.event.inputs.build == 'yes' }}
         run: echo "flag=true" >> $GITHUB_ENV
 
   testBuild:
