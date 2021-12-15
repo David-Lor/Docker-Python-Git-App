@@ -5,7 +5,7 @@ on:
     branches:
       - '**'  # all branches
   schedule:
-    - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
+    - cron: '22 2 * * *'  # everyday at 02:22h
 
 jobs:
 
@@ -101,7 +101,7 @@ jobs:
 
   testNoBuild:
     # Run "no-build" tests (pre-building image for linux/amd64, only for images supporting this arch)
-    name: "[${{ matrix.image.fromImage }}] Test (no-build)"
+    name: "[${{ matrix.image.fromImage }} (${{ env.prebuildImageArch }})] Test (no-build)"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
@@ -156,7 +156,7 @@ jobs:
 
   buildPush:
     # Build image, then push to DockerHub if current branch is "master"
-    name: "[${{ matrix.image.fromImage }} -> ${{ matrix.image.toTag }}] Build & Push (multiarch)"
+    name: "[${{ matrix.image.fromImage }} -> ${{ matrix.image.toTag }} (${{ matrix.arch }})] Build & Push"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
@@ -168,43 +168,61 @@ jobs:
       fail-fast: false
       matrix:
         image: ${{ fromJson(needs.imagesMatrix.outputs.images) }}
+        arch: ${{ fromJson(needs.imagesMatrix.outputs.archs) }}
 
     steps:
+      # Condition
+      - name: Determine if job must run
+        run: |
+          JSON_FILE=/tmp/matrix.image.arch.json
+          echo '${{ toJson(matrix.image.archs) }}' > $JSON_FILE
+          r=$( jq 'contains(["${{ matrix.arch }}"])' $JSON_FILE )
+          echo "runFlag=$r" >> $GITHUB_ENV
+      - name: Determine if install QEMU
+        if: ${{ env.runFlag == 'true' }}
+        run: |
+          if [[ "${{ matrix.arch }}" != "linux/amd64" ]]
+          then
+            echo "qemuFlag=true" >> $GITHUB_ENV
+          fi
+      - name: Determine if must push built image
+        if: ${{ github.ref == 'refs/heads/master' && env.runFlag == 'true' }}
+        run: |
+          echo "pushFlag=true >> $GITHUB_ENV"
+
       # Setup
       - name: Checkout
+        if: ${{ env.runFlag == 'true' }}
         uses: actions/checkout@master
         with:
           fetch-depth: 1
       - name: Install QEMU
+        if: ${{ env.runFlag == 'true' && env.qemuFlag == 'true' }}
         uses: docker/setup-qemu-action@v1
       - name: Install Docker Buildx
+        if: ${{ env.runFlag == 'true' }}
         uses: docker/setup-buildx-action@v1
       - name: Set environment variables
-        # TODO Update arch=...
+        if: ${{ env.runFlag == 'true' }}
         run: |
           echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
           echo "toTag=${{ matrix.image.toTag }}" >> $GITHUB_ENV
           echo "arch=${{ matrix.image.arch }}" >> $GITHUB_ENV
           echo "buildxPush=false" >> $GITHUB_ENV
-      - name: Set buildx push flag
-        if: github.ref == 'refs/heads/master'
-        run: |
-          echo "buildxPush=true >> $GITHUB_ENV"
+          if [[ '${{ env.pushFlag }}' == 'true' ]]
+          then
+            echo "buildxPush=true" >> $GITHUB_ENV
+          fi
 
       # Docker login
       - name: Login to DockerHub
-        if: ${{ env.buildxPush == 'true' }}
+        if: ${{ env.runFlag == 'true' && env.buildxPush == 'true' }}
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      # Build & push for all archs
-      - name: Docker cache
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-        with:
-          key: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}-{hash}"
-          restore-keys: "DockerPythonGitApp-docker-cache-${{ matrix.base_tag }}"
+      # Build/Push
       - name: Build & Push for all archs
+        if: ${{ env.runFlag == 'true' }}
         run: make buildx FROM_IMAGE=${{ env.fromImage }} TO_TAG=${{ env.toTag }} BUILDX_PUSH=${{ env.buildxPush }} ARCH=${{ env.arch }}
