@@ -66,14 +66,20 @@ jobs:
 
 
   imagesMatrix:
-    # Parse and set the images matrix to be used by following jobs
+    # Parse and set the images & archs matrix to be used by following jobs
     name: Parse & Set images matrix
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
     needs:
       - flagTestBuild
     outputs:
-      matrix: ${{ steps.set_matrix.outputs.matrix }}
+      images: ${{ steps.set_matrix.outputs.images }}
+      archs: ${{ steps.set_matrix.outputs.archs }}
+    env:
+      # for set_matrix script
+      IMAGES_FILE: images.json
+      OUTPUT_IMAGES_KEY: images
+      OUTPUT_ARCHS_KEY: archs
 
     steps:
       # Setup
@@ -81,14 +87,20 @@ jobs:
         uses: actions/checkout@master
         with:
           fetch-depth: 1
-      - name: Load & Set matrix variable
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+          architecture: x64
+
+      # Export matrix variables
+      - name: Load & Set matrix variables
         id: set_matrix
-        run: |
-          echo "::set-output name=matrix::$(echo $(cat images.json) | sed 's/ //g' )"
+        run: python .github/workflows/scripts/build_test_push/set_matrix.py
 
 
   testNoBuild:
-    # Run "no-build" tests (pre-building image for linux/amd64)
+    # Run "no-build" tests (pre-building image for linux/amd64, only for images supporting this arch)
     name: "[${{ matrix.image.fromImage }}] Test (no-build)"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
@@ -99,41 +111,51 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ${{ fromJson(needs.imagesMatrix.outputs.matrix) }}
+        image: ${{ fromJson(needs.imagesMatrix.outputs.images) }}
+    env:
+      prebuildImageArch: linux/amd64
 
     steps:
+      # Condition
+      - name: Determine if job must run
+        run: |
+          JSON_FILE=/tmp/matrix.image.arch.json
+          echo '${{ toJson(matrix.image.archs) }}' > $JSON_FILE
+          r=$( jq 'contains(["${{ env.prebuildImageArch }}"])' $JSON_FILE )
+          echo "runFlag=$r" >> $GITHUB_ENV
+
       # Setup
       - name: Checkout
+        if: ${{ env.runFlag == 'true' }}
         uses: actions/checkout@master
         with:
           fetch-depth: 1
       - name: Setup Python
+        if: ${{ env.runFlag == 'true' }}
         uses: actions/setup-python@master
         with:
           python-version: "3.8"
           architecture: "x64"
       - name: Install test requirements
+        if: ${{ env.runFlag == 'true' }}
         run: make test-install-requirements
       - name: Set environment variables
+        if: ${{ env.runFlag == 'true' }}
         run: |
           echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
           echo "toImage=python-git-app:${{ matrix.image.toTag }}" >> $GITHUB_ENV
 
       # Build
-      - name: Docker cache
-        uses: satackey/action-docker-layer-caching@v0.0.11
-        continue-on-error: true
-        with:
-          key: "DockerPythonGitApp-docker-cache-${{ env.fromImage }}-{hash}"
-          restore-keys: "DockerPythonGitApp-docker-cache-${{ env.fromImage }}"
       - name: Build
+        if: ${{ env.runFlag == 'true' }}
         run: make build FROM_IMAGE=${{ env.fromImage }} TO_IMAGE=${{ env.toImage }}
       - name: Test "no-build" (arch=default)
+        if: ${{ env.runFlag == 'true' }}
         run: make test-nobuild FROM_IMAGE=${{ env.toImage }}
 
 
   buildPush:
-    # Build and push to DockerHub if current branch is "master"
+    # Build image, then push to DockerHub if current branch is "master"
     name: "[${{ matrix.image.fromImage }} -> ${{ matrix.image.toTag }}] Build & Push (multiarch)"
     runs-on: ubuntu-latest
     if: ${{ needs.flagTestBuild.outputs.flag == 'true' }}
@@ -145,7 +167,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ${{ fromJson(needs.imagesMatrix.outputs.matrix) }}
+        image: ${{ fromJson(needs.imagesMatrix.outputs.images) }}
 
     steps:
       # Setup
@@ -158,6 +180,7 @@ jobs:
       - name: Install Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Set environment variables
+        # TODO Update arch=...
         run: |
           echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
           echo "toTag=${{ matrix.image.toTag }}" >> $GITHUB_ENV
