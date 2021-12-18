@@ -38,5 +38,8 @@ set -ex
 digestArtifactName="digest-$BASEIMAGE-$ARCH"
 imageChangedArtifactName="imageChanged-$BASEIMAGE-$ARCH"
 
+digestArtifactName=$(stringSafe "$digestArtifactName")
+imageChangedArtifactName=$(stringSafe "$imageChangedArtifactName")
+
 setOutput "digestArtifactName" "$digestArtifactName"
 setOutput "imageChangedArtifactName" "$imageChangedArtifactName"

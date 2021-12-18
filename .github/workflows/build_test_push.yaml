@@ -74,7 +74,7 @@ jobs:
     # Run "build" tests
     name: Test (build)
     runs-on: ubuntu-latest
-    if: ${{ needs.mainFlags.outputs.flag == 'true' }}
+    if: ${{ needs.mainFlags.outputs.flagTestBuild == 'true' }}
     needs:
       - mainFlags
 
@@ -101,7 +101,7 @@ jobs:
     # Parse and set the images & archs matrix to be used by following jobs
     name: Parse & Set images matrix
     runs-on: ubuntu-latest
-    if: ${{ needs.mainFlags.outputs.flag == 'true' }}
+    if: ${{ needs.mainFlags.outputs.flagTestBuild == 'true' }}
     needs:
       - mainFlags
     outputs:
@@ -135,7 +135,7 @@ jobs:
     # Determine which base images changed, since last time the workflow ran, by comparing the base image digest
     # from the Registry against the last cached in workflow artifacts.
     # The results are saved on another kind of artifacts, whose existence means that the image changed.
-    name: ""
+    name: "[${{ matrix.image.fromImage }} (${{ matrix.arch }})] Detect base image changed"
     runs-on: ubuntu-latest
     needs:
       - imagesMatrix
@@ -156,30 +156,39 @@ jobs:
         # Some combinations may lead to unsupported image-arch combinations, which are skipped using the env variable from this first step:
         run: |
           JSON_FILE=/tmp/matrix.image.arch.json
-          echo '${{ toJson(matrix.image.arch) }}' > $JSON_FILE
+          echo '${{ toJson(matrix.image.archs) }}' > $JSON_FILE
           r=$( jq 'contains(["${{ matrix.arch }}"])' $JSON_FILE )
           echo "flagRun=$r" >> $GITHUB_ENV
 
       # Setup
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          fetch-depth: 1
       - name: Set image variables
         if: ${{ env.flagRun == 'true' }}
         run: |
           fromImage="${{ matrix.image.fromImage }}"
-          toImage="python-git-app:${{ matrix.image.toTag }}"
-          echo "fromImage=$fromImage" >> GITHUB_ENV
-          echo "toImage=$toImage" >> $GITHUB_ENV
+          echo "fromImage=$fromImage" >> $GITHUB_ENV
+          test "$fromImage"
       - name: Set arch variables
         if: ${{ env.flagRun == 'true' }}
         run: |
-          archOS=$( cut -d '/' -f 1 <<< "${{ matrix.arch }}" )
-          archArch=$( cut -d '/' -f 2- <<< "${{ matrix.arch }}" )
+          arch="${{ matrix.arch }}"
+          archOS=$( cut -d '/' -f 1 <<< "$arch" )
+          archArch=$( cut -d '/' -f 2- <<< "$arch" )
+          echo "arch=$arch" >> $GITHUB_ENV
           echo "archOS=$archOS" >> $GITHUB_ENV
           echo "archArch=$archArch" >> $GITHUB_ENV
+          test "$arch"
+          test "$archOS"
+          test "$archArch"
+          test "$arch" == "$archOS/$archArch"
       - name: Set artifact variables
         if: ${{ env.flagRun == 'true' }}
         env:
           BASEIMAGE: ${{ env.fromImage }}
-          ARCH: ${{ matrix.arch }}
+          ARCH: ${{ env.arch }}
         run: |
           bash .github/workflows/scripts/build_test_push/get_image_artifacts_names.sh
       - name: Setup artifact directory & set variable
@@ -187,6 +196,7 @@ jobs:
         run: |
           digestArtifactDir=$( dirname "${{ env.digestArtifactFile }}" )
           echo "digestArtifactDir=$digestArtifactDir" >> $GITHUB_ENV
+          test "$digestArtifactDir"
           mkdir -p "$digestArtifactDir"
 
       # Get last-cached and current digests
@@ -200,6 +210,7 @@ jobs:
           latest: true
       - name: Get DockerHub image digest
         if: ${{ env.flagRun == 'true' }}
+        id: dockerhub-metadata
         uses: David-Lor/action-dockerhub-get-tag-metadata@0.1.1
         with:
           image: ${{ env.fromImage }}
@@ -210,9 +221,10 @@ jobs:
         if: ${{ env.flagRun == 'true' }}
         run: |
           artifactImageDigest="$( cat '${{ env.digestArtifactFile }}' || echo '' )"
+          registryImageDigest="${{ steps.dockerhub-metadata.outputs.digest }}"
           echo "artifactImageDigest=$artifactImageDigest" >> $GITHUB_ENV
-          echo "registryImageDigest=${{ steps.dockerhub-metadata.outputs.digest }}" >> $GITHUB_ENV
-          test "${{ env.registryImageDigest }}"
+          echo "registryImageDigest=$registryImageDigest" >> $GITHUB_ENV
+          test "$registryImageDigest"
 
       # Determine if image was updated on Registry since last time.
       # If yes, save an artifact that acts as a flag for further jobs.
@@ -252,7 +264,7 @@ jobs:
     # TODO Only run for non-scheduled events? Problem: in that case, would create many jobs (matrix) what would NEVER run
     name: "[${{ matrix.image.fromImage }} (linux/amd64)] Test (no-build)"
     runs-on: ubuntu-latest
-    if: ${{ needs.mainFlags.outputs.flag == 'true' }}
+    if: ${{ needs.mainFlags.outputs.flagTestBuild == 'true' }}
     needs:
       - mainFlags
       - testBuild
@@ -305,12 +317,13 @@ jobs:
     # Build image, then push to DockerHub if current branch is "master"
     name: "[${{ matrix.image.fromImage }} -> ${{ matrix.image.toTag }} (${{ matrix.arch }})] Build & Push"
     runs-on: ubuntu-latest
-    if: ${{ needs.mainFlags.outputs.flag == 'true' }}
+    if: ${{ needs.mainFlags.outputs.flagTestBuild == 'true' }}
     needs:
       - mainFlags
       - testBuild
       - testNoBuild
       - imagesMatrix
+      - baseImagesChanged
     strategy:
       fail-fast: false
       matrix:
@@ -380,7 +393,7 @@ jobs:
         run: |
           echo "fromImage=${{ matrix.image.fromImage }}" >> $GITHUB_ENV
           echo "toTag=${{ matrix.image.toTag }}" >> $GITHUB_ENV
-          echo "arch=${{ matrix.image.arch }}" >> $GITHUB_ENV
+          echo "arch=${{ matrix.arch }}" >> $GITHUB_ENV
           echo "buildxPush=false" >> $GITHUB_ENV
           if [[ '${{ env.flagPush }}' == 'true' ]]
           then
