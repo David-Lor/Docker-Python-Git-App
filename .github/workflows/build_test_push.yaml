@@ -41,6 +41,8 @@ jobs:
             images.json
             tools/**
             scripts/**
+            .github/workflows/**
+          # TODO Remove workflows from changed-files detection list
 
       # Set flags
       - name: Set flag FilesChanged
