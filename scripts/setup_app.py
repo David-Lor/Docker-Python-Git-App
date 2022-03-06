@@ -25,10 +25,10 @@ class Settings:
         self.app_dir = self.join_home(self.app_name)
         self.requirements_file = self.join_app(self.REQUIREMENTS_FILENAME)
         self.git_branch = os.getenv("GIT_BRANCH")
-    
+
     def join_home(self, path):
         return os.path.join(self.base_dir, path)
-    
+
     def join_app(self, path):
         return os.path.join(self.app_dir, path)
 

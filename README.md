@@ -50,6 +50,13 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 Only required variable is (ENV) `GIT_REPOSITORY`.
 The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), used on image build.
 
+If your Python script/app is CLI-based and requires to be called with arguments (for example `python . worker --instances=10`), you can provide them as Docker command arguments, like following:
+
+```bash
+docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" -e GIT_BRANCH="args" davidlor/python-git-app worker --instances=10
+# This command will clone an existing branch on the example repository, and print out the custom commands provided
+```
+
 ## Available tags
 
 - The tags available for the image are a limited selection of tags used in base images, such as the [official Python images](https://hub.docker.com/_/python/).
