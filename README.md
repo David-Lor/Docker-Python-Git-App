@@ -45,10 +45,17 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 - `GIT_BRANCH`: set the Branch to clone from the Git repository (optional, default: use default branch)
 - `APP_NAME`: name of your app. This name is given to the directory where project is cloned on(optional, default: _PythonApp_)
 - (ARG) `USERNAME`: name of the user that is created on Dockerbuild to run the app with (optional, default: _user_)
-- (ARG) `BASE_IMAGE`: base full image name to be used for the build (optional, default: _python:latest_)
+- (ARG) `FROM_IMAGE`: base full image name to be used for the build (optional, default: _python:latest_)
 
 Only required variable is (ENV) `GIT_REPOSITORY`.
 The variables marked with (ARG) are [build-args](https://docs.docker.com/engine/reference/commandline/build/#set-build-time-variables---build-arg), used on image build.
+
+If your Python script/app is CLI-based and requires to be called with arguments (for example `python . worker --instances=10`), you can provide them as Docker command arguments, like following:
+
+```bash
+docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-HelloWorld.git" -e GIT_BRANCH="args" davidlor/python-git-app worker --instances=10
+# This command will clone an existing branch on the example repository, and print out the custom commands provided
+```
 
 ## Available tags
 
@@ -64,12 +71,12 @@ for unsupported architedtures), you must do on host machine:
 - Clone this repository
 - Build a new Docker image using the repository directory - you can optionally set these ARGs:
   - a custom username using the `USERNAME` ARG
-  - a custom base image using the `BASE_IMAGE` ARG (example: `python:alpine` or `python:slim`)
+  - a custom base image using the `FROM_IMAGE` ARG (example: `python:alpine` or `python:slim`)
 - Create a new container, setting up the desired ENV variables
 
 ```bash
 git clone https://github.com/David-Lor/Docker-Python-Autoclonable-App.git DockerPythonClonable
-docker build DockerPythonClonable --build-arg USERNAME=user --build-arg BASE_IMAGE=python:slim -t yourname/yourtag:yourversion
+docker build DockerPythonClonable --build-arg USERNAME=user --build-arg FROM_IMAGE=python:slim -t yourname/yourtag:yourversion
 docker run [...] yourname/yourtag:yourversion
 ```
 
@@ -123,6 +130,8 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.4.1:
+  - Allow passing arguments to Python script/app (for example, for calling CLI-like apps)
 - 0.3.1
   - Add new tags: pyston (based on [pyston/pyston](https://hub.docker.com/r/pyston/pyston)), pypy (based on [pypy](https://hub.docker.com/_/pypy))
   - Refactor tags.json into images.json, referencing complete source images, target tags and archs for each supported tag

@@ -18,7 +18,8 @@ USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
 # Copy scripts
-COPY scripts/* ./scripts/
+COPY --chown=${USERNAME}:${USERNAME} scripts/* ./scripts/
+RUN chmod +x ./scripts/entrypoint.sh
 
 # Run entrypoint as default command
-CMD ["sh", "scripts/entrypoint.sh"]
+ENTRYPOINT ["./scripts/entrypoint.sh"]
