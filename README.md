@@ -130,6 +130,8 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.4.1:
+  - Allow passing arguments to Python script/app (for example, for calling CLI-like apps)
 - 0.3.1
   - Add new tags: pyston (based on [pyston/pyston](https://hub.docker.com/r/pyston/pyston)), pypy (based on [pypy](https://hub.docker.com/_/pypy))
   - Refactor tags.json into images.json, referencing complete source images, target tags and archs for each supported tag
