@@ -9,8 +9,9 @@ on:
     inputs:
       build:
         description: "Run build steps? (yes/no)"
+        type: boolean
         required: true
-        default: "yes"
+        default: true
 
 jobs:
 
@@ -40,7 +41,7 @@ jobs:
             tools/**
             scripts/**
       - name: Set flag for triggering test & build jobs
-        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' || github.event.inputs.build == 'yes' }}
+        if: ${{ steps.changed-files.outputs.any_changed == 'true' || github.event_name == 'schedule' || github.event.inputs.build == 'true' }}
         run: echo "flag=true" >> $GITHUB_ENV
 
   testBuild:
