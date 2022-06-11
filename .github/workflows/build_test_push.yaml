@@ -1,5 +1,10 @@
 name: Build, Test & Push
 on:
+  push:
+    branches:
+      - '**'  # all branches
+  schedule:
+    - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
   workflow_dispatch:
     inputs:
       build:
@@ -7,11 +12,6 @@ on:
         type: boolean
         required: true
         default: true
-  push:
-    branches:
-      - '**'  # all branches
-  schedule:
-    - cron: '22 2 * * 1,3,5'  # every monday, wednesday, friday - at 02:00h
 
 jobs:
 
@@ -172,7 +172,7 @@ jobs:
       - name: Set buildx push flag
         if: github.ref == 'refs/heads/master'
         run: |
-          echo "buildxPush=true >> $GITHUB_ENV"
+          echo "buildxPush=true" >> $GITHUB_ENV
 
       # Docker login
       - name: Login to DockerHub
