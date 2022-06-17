@@ -3,4 +3,4 @@
 set -ex
 
 python -u ~/scripts/setup_app.py
-python -u "$APP_NAME" "$@"
+exec python -u "$APP_NAME" "$@"
