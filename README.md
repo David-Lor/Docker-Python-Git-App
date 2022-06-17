@@ -130,6 +130,8 @@ docker run -it --rm -e GIT_REPOSITORY="https://github.com/David-Lor/Python-Hello
 
 ## Changelog
 
+- 0.6.1
+  - Exec Python on entrypoint to force PID=1
 - 0.5.1
   - Add arm64 support for all images
   - Remove unsupported pyston armv7 arch

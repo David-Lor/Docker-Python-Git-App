@@ -32,3 +32,8 @@ class TestClone(BaseTest):
         args = ["--foo", "bar", "-baz", "0"]
         output = self.run_container(branch="args", final_args=args)
         assert f"Called with args: {str(args)}" in output
+
+    def test_pid(self):
+        """Test cloning from an existing repository, and verify that the running Python process has a PID=1"""
+        output = self.run_container(branch="getpid")
+        assert "PID=1" in output
