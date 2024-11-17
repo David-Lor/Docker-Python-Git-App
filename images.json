@@ -50,6 +50,26 @@
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
+    "fromImage": "python:3.13",
+    "toTag": "3.13",
+    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
+  },
+  {
+    "fromImage": "python:3.12",
+    "toTag": "3.12",
+    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
+  },
+  {
+    "fromImage": "python:3.11",
+    "toTag": "3.11",
+    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
+  },
+  {
+    "fromImage": "python:3.10",
+    "toTag": "3.10",
+    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
+  },
+  {
     "fromImage": "python:3.9",
     "toTag": "3.9",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
