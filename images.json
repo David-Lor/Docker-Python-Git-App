@@ -30,6 +30,11 @@
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
+    "fromImage": "python:3.14",
+    "toTag": "3.14",
+    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
+  },
+  {
     "fromImage": "python:3.13",
     "toTag": "3.13",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
@@ -55,43 +60,13 @@
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
-    "fromImage": "python:3.9-slim",
-    "toTag": "3.9-slim",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
-    "fromImage": "python:3.9-alpine",
-    "toTag": "3.9-alpine",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
     "fromImage": "python:3.8",
     "toTag": "3.8",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
-    "fromImage": "python:3.8-slim",
-    "toTag": "3.8-slim",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
-    "fromImage": "python:3.8-alpine",
-    "toTag": "3.8-alpine",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
     "fromImage": "python:3.7",
     "toTag": "3.7",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
-    "fromImage": "python:3.7-alpine",
-    "toTag": "3.7-alpine",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
-    "fromImage": "python:3.6-slim",
-    "toTag": "3.6-slim",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
