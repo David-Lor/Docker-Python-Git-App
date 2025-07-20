@@ -30,11 +30,6 @@
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
-    "fromImage": "python:3.14",
-    "toTag": "3.14",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
     "fromImage": "python:3.13",
     "toTag": "3.13",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
