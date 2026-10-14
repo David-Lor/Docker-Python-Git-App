@@ -15,11 +15,6 @@
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
   },
   {
-    "fromImage": "python:rc-slim",
-    "toTag": "rc-slim",
-    "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
-  },
-  {
     "fromImage": "python:rc-alpine",
     "toTag": "rc-alpine",
     "arch": "linux/amd64,linux/arm/v7,linux/arm64/v8"
